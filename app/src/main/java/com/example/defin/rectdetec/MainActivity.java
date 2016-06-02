@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
-                    tos.setLanguage(Locale.ENGLISH);
+                    tos.setLanguage(Locale.GERMAN);
                 }
             }
         });
@@ -148,40 +148,24 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
                 //Rectangle Checks - Points, area, convexity
                 if (points.total() == 4 && Math.abs(Imgproc.contourArea(points)) > 1000 && Imgproc.isContourConvex(points)) {
-                    double cos = 0;
-                    double mcos = 0;
 
 
+                    // Get bounding rect of contour
+                    Rect rect = Imgproc.boundingRect(points);
 
-                    for (int sc = 2; sc < 5; sc++) {
+                    if (Math.abs(rect.height - rect.width) < 100) {
+                        // draw enclosing rectangle
+                        //TODO Change back to picori
 
-                        //TODO Figure a way to check angle
-                        if (cos > mcos) {
-                            mcos = cos;
-                        }
-                    }
+                        Imgproc.rectangle(picori, rect.tl(), rect.br(), new Scalar(255, 0, 0), 1, 8, 0);
 
-                    if (mcos < 0.3) {
-
-                        // Get bounding rect of contour
-                        Rect rect = Imgproc.boundingRect(points);
-
-                        if (Math.abs(rect.height - rect.width) < 100) {
-                            // draw enclosing rectangle
-                            //TODO Change back to picori
-
-                            Imgproc.rectangle(picori, rect.tl(), rect.br(), new Scalar(255, 0, 0), 1, 8, 0);
-
-                            if (tos.isSpeaking() == false) {
-                                tos.speak("A rectangle was found", TextToSpeech.QUEUE_FLUSH, null);
-                                tos.playSilence(2000,TextToSpeech.QUEUE_ADD,null);
-                            }
-
-
+                        if (tos.isSpeaking() == false) {
+                            tos.speak("Rechteck gefunden", TextToSpeech.QUEUE_FLUSH, null);
+                            tos.playSilence(2000, TextToSpeech.QUEUE_ADD, null);
                         }
 
-                    }
 
+                    }
 
                 }
 
